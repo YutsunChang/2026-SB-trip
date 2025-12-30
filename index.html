@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>2026 田澤湖滑雪之旅</title>
     
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Dog%20Face.png">
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Dog%20Face.png">
+    <link rel="apple-touch-icon" href="icon.png?v=final">
+    <link rel="icon" type="image/png" href="icon.png?v=final">
+    <link rel="shortcut icon" href="icon.png?v=final">
     
     <meta name="apple-mobile-web-app-title" content="2026滑雪">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -94,8 +95,8 @@
             padding: 20px;
             max-width: 600px; 
             margin: 0 auto;
-            /* 修正滑動問題：預留頂部空間 */
-            scroll-margin-top: 100px;
+            /* 預留空間，確保捲動時不被遮擋 */
+            scroll-margin-top: 120px; 
         }
 
         .card {
@@ -319,10 +320,12 @@
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            // 修正 Scroll Bug：強制回到頂部，並加上延遲確保渲染後執行
-            window.scrollTo(0, 0);
-            
-            // 捲動 Tabs
+            // 修正 Scroll Bug：強制回到頂部，避免遮擋
+            window.scrollTo({
+                top: 0,
+                behavior: 'auto'
+            });
+
             const scrollLeft = btn.offsetLeft - (tabsEl.clientWidth / 2) + (btn.clientWidth / 2);
             tabsEl.scrollTo({ left: scrollLeft, behavior: 'smooth' });
 
@@ -353,7 +356,8 @@
                     icon = '#art-tokyo-tower';
                     stickerClass = 'sticker-tokyo';
                 }
-                // [修正] 移除多餘括號
+                
+                // 這裡原本有語法錯誤，已經修復
                 if(item.activity.includes('溫泉') || item.location.includes('温泉')) {
                     icon = '#art-onsen';
                     stickerClass = 'sticker-onsen';

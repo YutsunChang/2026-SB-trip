@@ -15,10 +15,12 @@
     
     <style>
         :root {
-            --primary: #6366f1;
-            --bg-gradient: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%);
+            /* 主色調：大地棕色 (配合米色背景) */
+            --primary: #8b7d6b; 
+            /* 背景：柔和的奶油米色漸層 */
+            --bg-gradient: linear-gradient(135deg, #FFFEFA 0%, #F2EFE5 100%);
             --card-bg: #ffffff;
-            --text-main: #1f2937;
+            --text-main: #4a4a4a;
             --radius: 16px;
         }
 
@@ -35,15 +37,15 @@
 
         /* --- Header --- */
         .app-header {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            border-bottom: 1px solid rgba(0,0,0,0.03);
             padding-top: env(safe-area-inset-top);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
 
         .title-bar {
@@ -53,8 +55,8 @@
             align-items: center;
         }
 
-        h1 { margin: 0; font-size: 1.3rem; color: #111827; font-weight: 800; }
-        .subtitle { font-size: 0.85rem; color: #6b7280; margin-top: 4px; font-weight: 500; }
+        h1 { margin: 0; font-size: 1.3rem; color: #3d3d3d; font-weight: 800; letter-spacing: 0.5px; }
+        .subtitle { font-size: 0.85rem; color: #8c8c8c; margin-top: 4px; font-weight: 500; }
 
         /* --- Tabs --- */
         .tabs-wrapper {
@@ -67,8 +69,8 @@
         .tabs-wrapper::-webkit-scrollbar { display: none; }
 
         .tab-btn {
-            background: #f3f4f6;
-            border: none;
+            background: #ffffff;
+            border: 1px solid #eaddcf;
             border-radius: 12px;
             padding: 8px 16px;
             min-width: 55px;
@@ -78,13 +80,16 @@
             cursor: pointer;
             transition: all 0.2s;
             flex-shrink: 0;
-            color: #4b5563;
+            color: #8c8c8c;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
         .tab-btn.active {
             background: var(--primary);
             color: white;
-            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(139, 125, 107, 0.3);
+            transform: translateY(-2px);
         }
 
         .tab-day { font-size: 0.7rem; font-weight: normal; margin-bottom: 2px; }
@@ -95,7 +100,6 @@
             padding: 20px;
             max-width: 600px; 
             margin: 0 auto;
-            /* 預留空間，確保捲動時不被遮擋 */
             scroll-margin-top: 120px; 
         }
 
@@ -104,12 +108,12 @@
             border-radius: var(--radius);
             padding: 18px;
             margin-bottom: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
             display: flex;
             gap: 15px;
             position: relative;
             overflow: hidden;
-            border: 1px solid #f3f4f6;
+            border: 1px solid rgba(255,255,255,0.8);
             animation: slideUp 0.3s ease-out forwards;
             opacity: 0;
             transform: translateY(10px);
@@ -125,20 +129,20 @@
             align-items: center;
             min-width: 55px;
             padding-right: 15px;
-            border-right: 1px dashed #e5e7eb;
+            border-right: 1px dashed #e0d6cc;
             justify-content: flex-start;
             padding-top: 5px;
         }
 
-        .time-text { font-size: 1.1rem; font-weight: 800; color: #1f2937; }
-        .time-ampm { font-size: 0.7rem; color: #9ca3af; font-weight: 600; text-transform: uppercase; margin-top: 2px; }
+        .time-text { font-size: 1.1rem; font-weight: 800; color: #595959; }
+        .time-ampm { font-size: 0.7rem; color: #999; font-weight: 600; text-transform: uppercase; margin-top: 2px; }
 
         .info-col { flex: 1; position: relative; z-index: 2; }
 
         .tag {
             display: inline-block;
             font-size: 0.75rem;
-            padding: 3px 8px;
+            padding: 3px 10px;
             border-radius: 6px;
             font-weight: 700;
             margin-bottom: 6px;
@@ -148,7 +152,7 @@
         .activity-title {
             font-size: 1.1rem;
             font-weight: 700;
-            color: #111827;
+            color: #333;
             margin-bottom: 6px;
             line-height: 1.4;
         }
@@ -156,47 +160,52 @@
         .location-btn {
             display: inline-flex;
             align-items: center;
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            color: #6b7280;
+            background: #fcfcfc;
+            border: 1px solid #eee;
+            color: #888;
             font-size: 0.8rem;
-            padding: 5px 10px;
+            padding: 6px 12px;
             border-radius: 8px;
             text-decoration: none;
             margin-top: 5px;
             transition: all 0.2s;
             font-weight: 500;
         }
-        .location-btn:active { background: #e5e7eb; }
-        .location-btn svg { width: 14px; height: 14px; margin-right: 4px; color: #9ca3af; }
+        .location-btn:active { background: #f0f0f0; }
+        .location-btn svg { width: 14px; height: 14px; margin-right: 4px; color: #aaa; }
 
         .note-box {
             margin-top: 10px;
             padding: 8px 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 0.85rem;
             line-height: 1.4;
         }
 
-        /* 配色 */
-        .type-交通 .tag { background: #dbeafe; color: #1e40af; }
-        .type-交通 .time-text { color: #1e40af; }
-        .type-住宿 .tag { background: #fce7f3; color: #be185d; }
-        .type-住宿 .time-text { color: #be185d; }
-        .type-美食 .tag { background: #fef3c7; color: #b45309; }
-        .type-美食 .time-text { color: #b45309; }
-        .type-滑雪 .tag { background: #d1fae5; color: #047857; }
-        .type-滑雪 .time-text { color: #047857; }
-        .type-逛街購物 .tag { background: #ede9fe; color: #6d28d9; }
-        .type-逛街購物 .time-text { color: #6d28d9; }
-        .type-放空亂晃 .tag, .type-景點觀光 .tag { background: #f3f4f6; color: #4b5563; }
-        .type-放空亂晃 .time-text, .type-景點觀光 .time-text { color: #4b5563; }
+        /* 配色 (莫蘭迪色系) */
+        .type-交通 .tag { background: #e3f2fd; color: #1565c0; }
+        .type-交通 .time-text { color: #1565c0; }
+        
+        .type-住宿 .tag { background: #fce4ec; color: #c2185b; }
+        .type-住宿 .time-text { color: #c2185b; }
+        
+        .type-美食 .tag { background: #fff3e0; color: #e65100; }
+        .type-美食 .time-text { color: #e65100; }
+        
+        .type-滑雪 .tag { background: #e0f2f1; color: #00695c; }
+        .type-滑雪 .time-text { color: #00695c; }
+        
+        .type-逛街購物 .tag { background: #f3e5f5; color: #7b1fa2; }
+        .type-逛街購物 .time-text { color: #7b1fa2; }
+        
+        .type-放空亂晃 .tag, .type-景點觀光 .tag { background: #f5f5f5; color: #616161; }
+        .type-放空亂晃 .time-text, .type-景點觀光 .time-text { color: #616161; }
 
-        .note-normal { background: #fffbeb; color: #92400e; border-left: 3px solid #f59e0b; }
-        .note-alert { background: #fef2f2; color: #991b1b; border-left: 3px solid #ef4444; }
-        .note-booked { background: #f0fdf4; color: #166534; border-left: 3px solid #22c55e; }
+        .note-normal { background: #fffde7; color: #f57f17; border-left: 3px solid #fbc02d; }
+        .note-alert { background: #ffebee; color: #c62828; border-left: 3px solid #ef5350; }
+        .note-booked { background: #e8f5e9; color: #2e7d32; border-left: 3px solid #66bb6a; }
 
-        /* 背景插圖 (淡化) */
+        /* 背景插圖 (保持手繪風但非常淡) */
         .sticker-icon {
             position: absolute;
             right: -10px;
@@ -207,13 +216,13 @@
             transform: rotate(-10deg);
             z-index: 1;
             pointer-events: none;
-            color: #6b7280; 
+            color: #8b7d6b;
         }
-        .sticker-tokyo { color: #ef4444; opacity: 0.08; } 
-        .sticker-onsen { color: #3b82f6; opacity: 0.08; } 
-        .sticker-ski { color: #10b981; opacity: 0.1; }   
+        .sticker-tokyo { color: #d86969; opacity: 0.08; } 
+        .sticker-onsen { color: #5c8ab8; opacity: 0.08; } 
+        .sticker-ski { color: #58a183; opacity: 0.1; }   
 
-        .footer { text-align: center; color: #9ca3af; font-size: 0.75rem; padding: 30px; }
+        .footer { text-align: center; color: #b0a496; font-size: 0.75rem; padding: 30px; }
     </style>
 </head>
 <body>
@@ -320,7 +329,7 @@
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            // 修正 Scroll Bug：強制回到頂部，避免遮擋
+            // 修正 Scroll Bug：強制回到頂部
             window.scrollTo({
                 top: 0,
                 behavior: 'auto'
@@ -356,8 +365,6 @@
                     icon = '#art-tokyo-tower';
                     stickerClass = 'sticker-tokyo';
                 }
-                
-                // 這裡原本有語法錯誤，已經修復
                 if(item.activity.includes('溫泉') || item.location.includes('温泉')) {
                     icon = '#art-onsen';
                     stickerClass = 'sticker-onsen';

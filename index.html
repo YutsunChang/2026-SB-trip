@@ -15,13 +15,12 @@
     
     <style>
         :root {
-            /* 主色調：大地棕色 (配合米色背景) */
             --primary: #8b7d6b; 
-            /* 背景：柔和的奶油米色漸層 */
             --bg-gradient: linear-gradient(135deg, #FFFEFA 0%, #F2EFE5 100%);
             --card-bg: #ffffff;
             --text-main: #4a4a4a;
             --radius: 16px;
+            --danger: #ef5350;
         }
 
         body {
@@ -37,7 +36,7 @@
 
         /* --- Header --- */
         .app-header {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             position: sticky;
@@ -45,7 +44,6 @@
             z-index: 100;
             border-bottom: 1px solid rgba(0,0,0,0.03);
             padding-top: env(safe-area-inset-top);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
 
         .title-bar {
@@ -55,7 +53,7 @@
             align-items: center;
         }
 
-        h1 { margin: 0; font-size: 1.3rem; color: #3d3d3d; font-weight: 800; letter-spacing: 0.5px; }
+        h1 { margin: 0; font-size: 1.3rem; color: #3d3d3d; font-weight: 800; }
         .subtitle { font-size: 0.85rem; color: #8c8c8c; margin-top: 4px; font-weight: 500; }
 
         /* --- Tabs --- */
@@ -91,18 +89,23 @@
             box-shadow: 0 4px 10px rgba(139, 125, 107, 0.3);
             transform: translateY(-2px);
         }
-
+        
         .tab-day { font-size: 0.7rem; font-weight: normal; margin-bottom: 2px; }
         .tab-date { font-size: 1rem; font-weight: 700; }
 
-        /* --- Content --- */
+        /* --- Content Layout --- */
         .container {
             padding: 20px;
             max-width: 600px; 
             margin: 0 auto;
             scroll-margin-top: 120px; 
+            display: none; /* 預設隱藏，由 JS 控制顯示 */
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
+        .container.active { display: block; opacity: 1; }
 
+        /* --- 行程卡片樣式 --- */
         .card {
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -114,13 +117,6 @@
             position: relative;
             overflow: hidden;
             border: 1px solid rgba(255,255,255,0.8);
-            animation: slideUp 0.3s ease-out forwards;
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        @keyframes slideUp {
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .time-col {
@@ -133,123 +129,99 @@
             justify-content: flex-start;
             padding-top: 5px;
         }
-
         .time-text { font-size: 1.1rem; font-weight: 800; color: #595959; }
         .time-ampm { font-size: 0.7rem; color: #999; font-weight: 600; text-transform: uppercase; margin-top: 2px; }
-
         .info-col { flex: 1; position: relative; z-index: 2; }
-
-        .tag {
-            display: inline-block;
-            font-size: 0.75rem;
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
-        }
-
-        .activity-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 6px;
-            line-height: 1.4;
-        }
-
-        .location-btn {
-            display: inline-flex;
-            align-items: center;
-            background: #fcfcfc;
-            border: 1px solid #eee;
-            color: #888;
-            font-size: 0.8rem;
-            padding: 6px 12px;
-            border-radius: 8px;
-            text-decoration: none;
-            margin-top: 5px;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-        .location-btn:active { background: #f0f0f0; }
+        .tag { display: inline-block; font-size: 0.75rem; padding: 3px 10px; border-radius: 6px; font-weight: 700; margin-bottom: 6px; }
+        .activity-title { font-size: 1.1rem; font-weight: 700; color: #333; margin-bottom: 6px; line-height: 1.4; }
+        .location-btn { display: inline-flex; align-items: center; background: #fcfcfc; border: 1px solid #eee; color: #888; font-size: 0.8rem; padding: 6px 12px; border-radius: 8px; text-decoration: none; margin-top: 5px; font-weight: 500; }
         .location-btn svg { width: 14px; height: 14px; margin-right: 4px; color: #aaa; }
-
-        .note-box {
-            margin-top: 10px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            line-height: 1.4;
-        }
-
-        /* 配色 (莫蘭迪色系) */
+        .note-box { margin-top: 10px; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; line-height: 1.4; }
+        
+        /* 行程配色 */
         .type-交通 .tag { background: #e3f2fd; color: #1565c0; }
         .type-交通 .time-text { color: #1565c0; }
-        
         .type-住宿 .tag { background: #fce4ec; color: #c2185b; }
         .type-住宿 .time-text { color: #c2185b; }
-        
         .type-美食 .tag { background: #fff3e0; color: #e65100; }
         .type-美食 .time-text { color: #e65100; }
-        
         .type-滑雪 .tag { background: #e0f2f1; color: #00695c; }
         .type-滑雪 .time-text { color: #00695c; }
-        
         .type-逛街購物 .tag { background: #f3e5f5; color: #7b1fa2; }
         .type-逛街購物 .time-text { color: #7b1fa2; }
-        
         .type-放空亂晃 .tag, .type-景點觀光 .tag { background: #f5f5f5; color: #616161; }
         .type-放空亂晃 .time-text, .type-景點觀光 .time-text { color: #616161; }
-
         .note-normal { background: #fffde7; color: #f57f17; border-left: 3px solid #fbc02d; }
         .note-alert { background: #ffebee; color: #c62828; border-left: 3px solid #ef5350; }
         .note-booked { background: #e8f5e9; color: #2e7d32; border-left: 3px solid #66bb6a; }
 
-        /* 背景插圖 (保持手繪風但非常淡) */
-        .sticker-icon {
-            position: absolute;
-            right: -10px;
-            bottom: -15px;
-            width: 100px;
-            height: 100px;
-            opacity: 0.08;
-            transform: rotate(-10deg);
-            z-index: 1;
-            pointer-events: none;
-            color: #8b7d6b;
-        }
+        /* 背景插圖 */
+        .sticker-icon { position: absolute; right: -10px; bottom: -15px; width: 100px; height: 100px; opacity: 0.08; transform: rotate(-10deg); z-index: 1; pointer-events: none; color: #8b7d6b; }
         .sticker-tokyo { color: #d86969; opacity: 0.08; } 
         .sticker-onsen { color: #5c8ab8; opacity: 0.08; } 
         .sticker-ski { color: #58a183; opacity: 0.1; }   
 
+        /* --- 記帳本樣式 --- */
+        .ledger-tools { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-main { flex: 1; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 5px; box-shadow: 0 4px 10px rgba(139, 125, 107, 0.3); }
+        .btn-stat { background: #5c8ab8; }
+        .btn-main:active { transform: scale(0.98); }
+
+        .ledger-list { display: flex; flex-direction: column; gap: 12px; }
+        .ledger-item { background: white; border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; }
+        .l-date { font-size: 0.75rem; color: #999; font-weight: 600; margin-bottom: 2px; }
+        .l-item { font-size: 1rem; font-weight: 700; color: #333; }
+        .l-who { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: #eee; color: #666; margin-left: 5px; }
+        .l-who.Gino { background: #e3f2fd; color: #1565c0; }
+        .l-who.Danny { background: #fff3e0; color: #e65100; }
+        .l-cost { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
+        .l-actions { display: flex; gap: 10px; margin-left: 15px; }
+        .l-btn { border: none; background: none; color: #ccc; cursor: pointer; padding: 5px; }
+        .l-btn.edit { color: #5c8ab8; }
+        .l-btn.del { color: #ef5350; }
+
+        /* --- 彈窗樣式 (Modal) --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; width: 85%; max-width: 350px; border-radius: 20px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; text-align: center; color: #333; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { font-size: 0.85rem; color: #666; margin-bottom: 5px; display: block; font-weight: 600; }
+        .form-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; box-sizing: border-box; background: #f9f9f9; }
+        .form-input:focus { outline: none; border-color: var(--primary); background: white; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 25px; }
+
+        /* 比分板樣式 */
+        .scoreboard { display: flex; justify-content: center; align-items: center; gap: 20px; margin: 20px 0; }
+        .player { text-align: center; flex: 1; }
+        .p-name { font-size: 0.9rem; color: #888; margin-bottom: 5px; font-weight: 700; }
+        .p-score { font-size: 1.8rem; font-weight: 900; color: #333; }
+        .p-score.Gino { color: #1565c0; }
+        .p-score.Danny { color: #e65100; }
+        .vs { font-size: 1.2rem; font-weight: 900; color: #ddd; font-style: italic; }
+
+        /* 載入中動畫 */
+        .loading { text-align: center; padding: 20px; color: #999; font-size: 0.9rem; }
+        
         .footer { text-align: center; color: #b0a496; font-size: 0.75rem; padding: 30px; }
+        
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
 
 <svg style="display: none;">
-    <symbol id="art-tokyo-tower" viewBox="0 0 100 100">
-        <path fill="currentColor" d="M50,5 L20,95 H80 L50,5 Z M50,15 L70,85 H30 L50,15 Z M35,45 H65 M30,65 H70 M25,85 H75" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <path d="M48,5 L52,5 L50,2 Z" fill="currentColor"/>
-    </symbol>
-    <symbol id="art-onsen" viewBox="0 0 100 100">
-        <path fill="currentColor" d="M10,40 L50,10 L90,40" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <rect x="20" y="40" width="60" height="50" stroke="currentColor" stroke-width="4" fill="none" rx="5"/>
-        <text x="50" y="75" font-family="sans-serif" font-size="30" text-anchor="middle" fill="currentColor">♨️</text>
-        <path d="M25,40 L25,60 M75,40 L75,60" stroke="currentColor" stroke-width="3"/>
-    </symbol>
-    <symbol id="art-ski" viewBox="0 0 100 100">
-        <path fill="currentColor" d="M10,80 L40,30 L70,80 L100,40 L100,90 H10 Z" opacity="0.2"/>
-        <path stroke="currentColor" stroke-width="4" stroke-linecap="round" d="M20,70 C30,60 50,60 60,70 S 90,60 95,70" fill="none"/>
-        <circle cx="50" cy="40" r="5" fill="currentColor"/>
-        <path stroke="currentColor" stroke-width="3" d="M45,45 L40,60 L55,55 L60,70" fill="none"/>
-        <path stroke="currentColor" stroke-width="3" d="M30,75 L70,65" fill="none"/>
-    </symbol>
+    <symbol id="art-tokyo-tower" viewBox="0 0 100 100"><path fill="currentColor" d="M50,5 L20,95 H80 L50,5 Z M50,15 L70,85 H30 L50,15 Z M35,45 H65 M30,65 H70 M25,85 H75" stroke="currentColor" stroke-width="3" fill="none"/><path d="M48,5 L52,5 L50,2 Z" fill="currentColor"/></symbol>
+    <symbol id="art-onsen" viewBox="0 0 100 100"><path fill="currentColor" d="M10,40 L50,10 L90,40" stroke="currentColor" stroke-width="4" fill="none"/><rect x="20" y="40" width="60" height="50" stroke="currentColor" stroke-width="4" fill="none" rx="5"/><text x="50" y="75" font-family="sans-serif" font-size="30" text-anchor="middle" fill="currentColor">♨️</text></symbol>
+    <symbol id="art-ski" viewBox="0 0 100 100"><path fill="currentColor" d="M10,80 L40,30 L70,80 L100,40 L100,90 H10 Z" opacity="0.2"/><path stroke="currentColor" stroke-width="4" d="M20,70 C30,60 50,60 60,70 S 90,60 95,70" fill="none"/><circle cx="50" cy="40" r="5" fill="currentColor"/><path stroke="currentColor" stroke-width="3" d="M45,45 L40,60 L55,55 L60,70" fill="none"/><path stroke="currentColor" stroke-width="3" d="M30,75 L70,65" fill="none"/></symbol>
     <symbol id="art-transport" viewBox="0 0 24 24"><path fill="currentColor" d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></symbol>
-    <symbol id="art-shop" viewBox="0 0 24 24"><path fill="currentColor" d="M19,6 L16,6 C16,3.79 14.21,2 12,2 C9.79,2 8,3.79 8,6 L5,6 C3.9,6 3,6.9 3,8 L3,20 C3,21.1 3.9,22 5,22 L19,22 C20.1,22 21,21.1 21,20 L21,8 C21,6.9 20.1,6 19,6 Z M12,4 C13.1,4 14,4.9 14,6 L10,6 C10,4.9 10.9,4 12,4 Z M19,20 L5,20 L5,8 L8,8 L8,10 C8,10.55 8.45,11 9,11 C9.55,11 10,10.55 10,10 L10,8 L14,8 L14,10 C14,10.55 14.45,11 15,11 C15.55,11 16,10.55 16,10 L16,8 L19,8 L19,20 Z"/></symbol>
-    <symbol id="art-food" viewBox="0 0 24 24"><path fill="currentColor" d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></symbol>
     <symbol id="art-bed" viewBox="0 0 24 24"><path fill="currentColor" d="M19,7 L11,7 L11,13 L19,13 L19,7 Z M21,3 L3,3 L3,21 L5,21 L5,18 L19,18 L19,21 L21,21 L21,3 Z M17,20 L7,20 L7,16 L17,16 L17,20 Z"/></symbol>
     <symbol id="icon-map" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></symbol>
+    
+    <symbol id="icon-plus" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></symbol>
+    <symbol id="icon-chart" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></symbol>
+    <symbol id="icon-edit" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></symbol>
+    <symbol id="icon-delete" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></symbol>
 </svg>
 
 <div class="app-header">
@@ -259,33 +231,114 @@
             <div class="subtitle">Tokyo & Akita Winter Trip</div>
         </div>
     </div>
-    <div class="tabs-wrapper" id="tabs"></div>
+    <div class="tabs-wrapper" id="tabs">
+        </div>
 </div>
 
-<div class="container" id="content"></div>
+<div class="container active" id="schedule-container">
+    <div id="content"></div>
+</div>
+
+<div class="container" id="ledger-container">
+    <div class="ledger-tools">
+        <button class="btn-main" onclick="openModal('add')">
+            <svg width="20" height="20"><use href="#icon-plus"></use></svg> 新增消費
+        </button>
+        <button class="btn-main btn-stat" onclick="showStats()">
+            <svg width="20" height="20"><use href="#icon-chart"></use></svg> 統計
+        </button>
+    </div>
+    <div class="ledger-list" id="ledger-list">
+        <div class="loading">正在讀取記帳資料...</div>
+    </div>
+</div>
+
 <div class="footer">Have a nice trip! ✈️</div>
 
+<div class="modal-overlay" id="form-modal">
+    <div class="modal">
+        <div class="modal-title" id="modal-title">新增消費</div>
+        <input type="hidden" id="edit-row-index">
+        
+        <div class="form-group">
+            <label class="form-label">日期</label>
+            <input type="date" class="form-input" id="inp-date">
+        </div>
+        <div class="form-group">
+            <label class="form-label">項目</label>
+            <input type="text" class="form-input" id="inp-item" placeholder="例如：滑雪票">
+        </div>
+        <div class="form-group">
+            <label class="form-label">素隨 (人員)</label>
+            <select class="form-input" id="inp-who">
+                <option value="Gino">Gino</option>
+                <option value="Danny">Danny</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">花費 (日幣)</label>
+            <input type="number" class="form-input" id="inp-cost" placeholder="¥">
+        </div>
+        
+        <div class="modal-btns">
+            <button class="btn-main" style="background:#ddd; color:#666;" onclick="closeModal()">取消</button>
+            <button class="btn-main" onclick="submitForm()" id="btn-submit">建立</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="stats-modal">
+    <div class="modal">
+        <div class="modal-title">消費大對決 🏆</div>
+        <div class="scoreboard">
+            <div class="player">
+                <div class="p-name">Gino</div>
+                <div class="p-score Gino" id="score-gino">0</div>
+            </div>
+            <div class="vs">VS</div>
+            <div class="player">
+                <div class="p-name">Danny</div>
+                <div class="p-score Danny" id="score-danny">0</div>
+            </div>
+        </div>
+        <div style="text-align:center; font-size:0.8rem; color:#999; margin-top:10px;">(單位：日幣)</div>
+        <div class="modal-btns">
+            <button class="btn-main" onclick="document.getElementById('stats-modal').classList.remove('active')">關閉</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    // ================= 配置區 =================
+    // 請將下方的 URL 換成您在 Apps Script 部署後取得的網址
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyi04M25InjCYhztx0i_L-hGLr61XWyUtxmBoYi6t6LBZY5uJl4DVyAMsIFS-QzzdFMBg/exec"; 
+    // =========================================
+
+    let ledgerData = [];
+
     document.addEventListener('DOMContentLoaded', () => {
+        initSchedule();
+        initLedger();
+    });
+
+    // --- 行程表功能 (保留原樣) ---
+    function initSchedule() {
         const rawData = [
-            // 1/15
+             // 1/15
             {date: "2026/1/15", time: "12:35", activity: "抵達成田 (16:35到)", location: "桃園國際機場第二航廈", type: "交通", note: "", customUrl: "https://maps.app.goo.gl/nx8Q56p4prUV6zNc9"},
             {date: "2026/1/15", time: "Check-in", activity: "住宿A (1/15-1/18)", location: "レム六本木", type: "住宿", note: "三晚¥47727 (Agoda)"},
             {date: "2026/1/15", time: "待取消", activity: "住宿B (記得取消!)", location: "東横INN神田秋葉原", type: "住宿", note: "⚠️ 記得要取消! 三晚¥34865"},
             {date: "2026/1/15", time: "晚間", activity: "六本木/麻布台/南青山", location: "六本木", type: "放空亂晃", note: ""},
-            
             // 1/16
             {date: "2026/1/16", time: "上午", activity: "御茶水/皇居/銀座", location: "", type: "放空亂晃", note: ""},
             {date: "2026/1/16", time: "下午", activity: "逛雪具", location: "小川町駅", type: "逛街購物", note: ""},
             {date: "2026/1/16", time: "下午", activity: "戶外用品", location: "ムーンライトギア 東京店", type: "逛街購物", note: ""},
             {date: "2026/1/16", time: "下午", activity: "Bic Camera", location: "ビックカメラ 有楽町店", type: "逛街購物", note: ""},
             {date: "2026/1/16", time: "20:00", activity: "和牛燒肉吃到飽", location: "肉屋の台所 Ginza Premium", type: "美食", note: "✅ 已預約"},
-            
             // 1/17
             {date: "2026/1/17", time: "上午", activity: "中目黑/代官山/六本木", location: "六本木", type: "放空亂晃", note: ""},
             {date: "2026/1/17", time: "下午", activity: "LE LABO", location: "LE LABO ルラボ 代官山", type: "逛街購物", note: ""},
             {date: "2026/1/17", time: "下午", activity: "星巴克臻選烘焙工坊", location: "STARBUCKS RESERVE(R) ROASTERY TOKYO", type: "放空亂晃", note: "人多需抽號碼牌"},
-            
             // 1/18
             {date: "2026/1/18", time: "05:15", activity: "退房出發 -> 六本木站", location: "remm roppongi", type: "交通", note: "步行至車站，搭 05:24 大江戶線(往兩國方向)"},
             {date: "2026/1/18", time: "05:30", activity: "大門站轉乘濱松町", location: "大門駅", type: "交通", note: "大門站B1出口步行至濱松町(有電梯)。搭 05:43 單軌電車。"},
@@ -295,12 +348,10 @@
             {date: "2026/1/18", time: "11:20", activity: "Check-in 放行李", location: "田沢湖水沢温泉郷 セルリアンリゾートAONI", type: "住宿", note: "四晚一泊二食¥108900"},
             {date: "2026/1/18", time: "下午", activity: "鶴の湯温泉", location: "乳頭温泉郷 鶴の湯温泉", type: "景點觀光", note: ""},
             {date: "2026/1/18", time: "下午", activity: "妙乃湯", location: "妙乃湯", type: "景點觀光", note: ""},
-            
             // 1/19 - 1/21
             {date: "2026/1/19", time: "全日", activity: "滑雪 (Day 1)", location: "たざわ湖スキー場", type: "滑雪", note: "1/19-1/21 滑三天"},
             {date: "2026/1/20", time: "全日", activity: "滑雪 (Day 2)", location: "たざわ湖スキー場", type: "滑雪", note: ""},
             {date: "2026/1/21", time: "全日", activity: "滑雪 (Day 3)", location: "たざわ湖スキー場", type: "滑雪", note: ""},
-            
             // 1/22
             {date: "2026/1/22", time: "09:10", activity: "巴士到秋田機場", location: "田沢湖水沢温泉郷 セルリアンリゾートAONI", type: "交通", note: "✅ 已預約接駁", customUrl: "https://maps.app.goo.gl/9Yzd9wYSp8opZcZS8"},
             {date: "2026/1/22", time: "14:10", activity: "飛機回台灣 (17:25抵達)", location: "秋田空港 (AXT)", type: "交通", note: ""}
@@ -311,56 +362,38 @@
         const uniqueDates = [...new Set(rawData.map(d => d.date))];
         const daysMap = ['週日','週一','週二','週三','週四','週五','週六'];
 
-        // 渲染 Tabs
+        // 1. 生成行程 Tabs
         uniqueDates.forEach((date, idx) => {
             const d = new Date(date);
             const btn = document.createElement('button');
             btn.className = `tab-btn ${idx === 0 ? 'active' : ''}`;
             btn.innerHTML = `<span class="tab-day">${daysMap[d.getDay()]}</span><span class="tab-date">${d.getDate()}</span>`;
-            
-            // 綁定點擊事件
-            btn.onclick = () => switchTab(date, btn);
+            btn.onclick = () => switchTab('schedule', date, btn);
             tabsEl.appendChild(btn);
         });
 
-        renderList(uniqueDates[0]);
+        // 2. 生成記帳本 Tab (最右邊)
+        const ledgerBtn = document.createElement('button');
+        ledgerBtn.className = 'tab-btn';
+        ledgerBtn.innerHTML = `<span class="tab-day">Book</span><span class="tab-date">¥</span>`;
+        ledgerBtn.onclick = () => switchTab('ledger', null, ledgerBtn);
+        tabsEl.appendChild(ledgerBtn);
 
-        function switchTab(date, btn) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            // 修正 Scroll Bug：強制回到頂部
-            window.scrollTo({
-                top: 0,
-                behavior: 'auto'
-            });
+        // 預設顯示第一天行程
+        renderList(uniqueDates[0], rawData);
 
-            const scrollLeft = btn.offsetLeft - (tabsEl.clientWidth / 2) + (btn.clientWidth / 2);
-            tabsEl.scrollTo({ left: scrollLeft, behavior: 'smooth' });
-
-            renderList(date);
-        }
-
-        function renderList(date) {
+        function renderList(date, data) {
             contentEl.innerHTML = '';
-            const items = rawData.filter(d => d.date === date);
-
-            if(items.length === 0) {
-                contentEl.innerHTML = '<div style="text-align:center;color:#94a3b8;margin-top:40px;">本日無行程</div>';
-                return;
-            }
+            const items = data.filter(d => d.date === date);
 
             items.forEach((item, idx) => {
-                let icon = '#art-transport'; 
+                let icon = '#art-transport';
                 let stickerClass = '';
-
-                // 預設分類圖標
                 if(item.type === '住宿') icon = '#art-bed';
                 if(item.type === '美食') icon = '#art-food';
                 if(item.type === '滑雪') icon = '#art-ski';
                 if(item.type === '逛街購物') icon = '#art-shop';
 
-                // 特殊情境判斷
                 if(item.location && (item.location.includes('六本木') || item.activity.includes('六本木') || item.location.includes('東京'))) {
                     icon = '#art-tokyo-tower';
                     stickerClass = 'sticker-tokyo';
@@ -374,7 +407,6 @@
                     stickerClass = 'sticker-ski';
                 }
 
-                // 時間處理
                 let timeStr = item.time;
                 let ampm = '';
                 if(timeStr.includes(':')) {
@@ -382,7 +414,6 @@
                     ampm = h >= 12 ? 'PM' : 'AM';
                 }
 
-                // 備註處理
                 let noteHtml = '';
                 if(item.note) {
                     let nClass = 'note-normal';
@@ -391,42 +422,223 @@
                     noteHtml = `<div class="note-box ${nClass}">${item.note}</div>`;
                 }
 
-                // 地圖按鈕 (優先使用 customUrl)
                 let mapHtml = '';
                 if(item.location) {
-                    let mapUrl = '';
-                    if (item.customUrl) {
-                        mapUrl = item.customUrl;
-                    } else {
-                        mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}`;
-                    }
-                    
-                    mapHtml = `<a href="${mapUrl}" target="_blank" class="location-btn">
-                        <svg viewBox="0 0 24 24"><use href="#icon-map"></use></svg>${item.location}
-                    </a>`;
+                    let mapUrl = item.customUrl ? item.customUrl : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}`;
+                    mapHtml = `<a href="${mapUrl}" target="_blank" class="location-btn"><svg viewBox="0 0 24 24"><use href="#icon-map"></use></svg>${item.location}</a>`;
                 }
 
                 const card = document.createElement('div');
                 card.className = `card type-${item.type}`;
                 card.style.animationDelay = `${idx * 0.05}s`;
-                
                 card.innerHTML = `
-                    <div class="time-col">
-                        <div class="time-text">${timeStr}</div>
-                        <div class="time-ampm">${ampm}</div>
-                    </div>
-                    <div class="info-col">
-                        <div class="tag">${item.type}</div>
-                        <div class="activity-title">${item.activity}</div>
-                        ${mapHtml}
-                        ${noteHtml}
-                    </div>
+                    <div class="time-col"><div class="time-text">${timeStr}</div><div class="time-ampm">${ampm}</div></div>
+                    <div class="info-col"><div class="tag">${item.type}</div><div class="activity-title">${item.activity}</div>${mapHtml}${noteHtml}</div>
                     <svg class="sticker-icon ${stickerClass}"><use href="${icon}"></use></svg>
                 `;
                 contentEl.appendChild(card);
             });
         }
-    });
+
+        // 切換 Tab 邏輯
+        window.switchTab = function(type, date, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'auto' });
+
+            const sContainer = document.getElementById('schedule-container');
+            const lContainer = document.getElementById('ledger-container');
+
+            if (type === 'schedule') {
+                sContainer.classList.add('active');
+                lContainer.classList.remove('active');
+                renderList(date, rawData);
+            } else {
+                sContainer.classList.remove('active');
+                lContainer.classList.add('active');
+                fetchLedgerData(); // 載入記帳資料
+            }
+            
+            // 捲動 Tab
+            const scrollLeft = btn.offsetLeft - (tabsEl.clientWidth / 2) + (btn.clientWidth / 2);
+            tabsEl.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+        }
+    }
+
+    // --- 記帳本功能 ---
+    
+    // 1. 讀取資料
+    function fetchLedgerData() {
+        const listEl = document.getElementById('ledger-list');
+        listEl.innerHTML = '<div class="loading">正在連線至 Google Sheet...</div>';
+
+        fetch(GAS_URL)
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    ledgerData = res.data; // 存起來供統計用
+                    renderLedgerList(ledgerData);
+                } else {
+                    listEl.innerHTML = '<div class="loading" style="color:red">讀取失敗</div>';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                listEl.innerHTML = '<div class="loading" style="color:red">連線錯誤</div>';
+            });
+    }
+
+    function renderLedgerList(data) {
+        const listEl = document.getElementById('ledger-list');
+        listEl.innerHTML = '';
+        if (data.length === 0) {
+            listEl.innerHTML = '<div class="loading">目前沒有消費記錄</div>';
+            return;
+        }
+
+        data.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'ledger-item';
+            row.innerHTML = `
+                <div>
+                    <div class="l-date">${item.date}</div>
+                    <div class="l-item">${item.item} <span class="l-who ${item.who}">${item.who}</span></div>
+                </div>
+                <div style="display:flex; align-items:center;">
+                    <div class="l-cost">¥${item.cost}</div>
+                    <div class="l-actions">
+                        <button class="l-btn edit" onclick="editItem(${item.rowIndex}, '${item.date}', '${item.item}', '${item.who}', ${item.cost})"><svg width="18" height="18"><use href="#icon-edit"></use></svg></button>
+                        <button class="l-btn del" onclick="deleteItem(${item.rowIndex})"><svg width="18" height="18"><use href="#icon-delete"></use></svg></button>
+                    </div>
+                </div>
+            `;
+            listEl.appendChild(row);
+        });
+    }
+
+    // 2. 開啟/關閉 Modal
+    window.openModal = function(mode, rowIndex = null) {
+        document.getElementById('form-modal').classList.add('active');
+        const today = new Date().toISOString().split('T')[0];
+        
+        if (mode === 'add') {
+            document.getElementById('modal-title').innerText = '新增消費';
+            document.getElementById('btn-submit').innerText = '建立';
+            document.getElementById('btn-submit').onclick = submitForm;
+            document.getElementById('edit-row-index').value = '';
+            
+            // 預設今天
+            document.getElementById('inp-date').value = today;
+            document.getElementById('inp-item').value = '';
+            document.getElementById('inp-who').value = 'Gino';
+            document.getElementById('inp-cost').value = '';
+        } else {
+            // 編輯模式資料回填由 editItem 處理
+        }
+    }
+
+    window.closeModal = function() {
+        document.getElementById('form-modal').classList.remove('active');
+    }
+
+    // 3. 送出表單 (新增/編輯)
+    window.submitForm = function() {
+        const date = document.getElementById('inp-date').value;
+        const item = document.getElementById('inp-item').value;
+        const who = document.getElementById('inp-who').value;
+        const cost = document.getElementById('inp-cost').value;
+        const rowIndex = document.getElementById('edit-row-index').value;
+
+        if (!date || !item || !cost) {
+            alert('請填寫完整資料');
+            return;
+        }
+
+        const btn = document.getElementById('btn-submit');
+        const originalText = btn.innerText;
+        btn.innerText = '處理中...';
+        btn.disabled = true;
+
+        const action = rowIndex === '' ? 'add' : 'edit';
+        const payload = {
+            action: action,
+            rowIndex: rowIndex,
+            date: date,
+            item: item,
+            who: who,
+            cost: cost
+        };
+
+        fetch(GAS_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === 'success') {
+                closeModal();
+                fetchLedgerData(); // 重新讀取
+            } else {
+                alert('錯誤: ' + res.message);
+            }
+        })
+        .catch(err => alert('連線失敗'))
+        .finally(() => {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        });
+    }
+
+    // 4. 刪除
+    window.deleteItem = function(rowIndex) {
+        if (!confirm('確定要刪除這筆消費嗎？')) return;
+
+        fetch(GAS_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'delete', rowIndex: rowIndex })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === 'success') {
+                fetchLedgerData();
+            } else {
+                alert('刪除失敗');
+            }
+        });
+    }
+
+    // 5. 編輯
+    window.editItem = function(rowIndex, date, item, who, cost) {
+        openModal('edit');
+        document.getElementById('modal-title').innerText = '編輯消費';
+        document.getElementById('btn-submit').innerText = '更新';
+        
+        document.getElementById('edit-row-index').value = rowIndex;
+        document.getElementById('inp-date').value = date;
+        document.getElementById('inp-item').value = item;
+        document.getElementById('inp-who').value = who;
+        document.getElementById('inp-cost').value = cost;
+    }
+
+    // 6. 統計功能
+    window.showStats = function() {
+        let ginoTotal = 0;
+        let dannyTotal = 0;
+
+        ledgerData.forEach(d => {
+            if (d.who === 'Gino') ginoTotal += d.cost;
+            if (d.who === 'Danny') dannyTotal += d.cost;
+        });
+
+        document.getElementById('score-gino').innerText = ginoTotal.toLocaleString();
+        document.getElementById('score-danny').innerText = dannyTotal.toLocaleString();
+        
+        document.getElementById('stats-modal').classList.add('active');
+    }
+
+    function initLedger() {
+        // 初始化時不讀取，等切換到 Tab 再讀取以節省流量
+    }
 </script>
 </body>
 </html>

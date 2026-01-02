@@ -44,6 +44,7 @@
             z-index: 100;
             border-bottom: 1px solid rgba(0,0,0,0.03);
             padding-top: env(safe-area-inset-top);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
 
         .title-bar {
@@ -53,7 +54,7 @@
             align-items: center;
         }
 
-        h1 { margin: 0; font-size: 1.3rem; color: #3d3d3d; font-weight: 800; }
+        h1 { margin: 0; font-size: 1.3rem; color: #3d3d3d; font-weight: 800; letter-spacing: 0.5px; }
         .subtitle { font-size: 0.85rem; color: #8c8c8c; margin-top: 4px; font-weight: 500; }
 
         /* --- Tabs --- */
@@ -89,7 +90,7 @@
             box-shadow: 0 4px 10px rgba(139, 125, 107, 0.3);
             transform: translateY(-2px);
         }
-        
+
         .tab-day { font-size: 0.7rem; font-weight: normal; margin-bottom: 2px; }
         .tab-date { font-size: 1rem; font-weight: 700; }
 
@@ -99,7 +100,7 @@
             max-width: 600px; 
             margin: 0 auto;
             scroll-margin-top: 120px; 
-            display: none; /* 預設隱藏，由 JS 控制顯示 */
+            display: none; 
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -117,7 +118,10 @@
             position: relative;
             overflow: hidden;
             border: 1px solid rgba(255,255,255,0.8);
+            animation: slideUp 0.3s ease-out forwards;
         }
+
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
 
         .time-col {
             display: flex;
@@ -132,9 +136,10 @@
         .time-text { font-size: 1.1rem; font-weight: 800; color: #595959; }
         .time-ampm { font-size: 0.7rem; color: #999; font-weight: 600; text-transform: uppercase; margin-top: 2px; }
         .info-col { flex: 1; position: relative; z-index: 2; }
-        .tag { display: inline-block; font-size: 0.75rem; padding: 3px 10px; border-radius: 6px; font-weight: 700; margin-bottom: 6px; }
+        .tag { display: inline-block; font-size: 0.75rem; padding: 3px 10px; border-radius: 6px; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.5px; }
         .activity-title { font-size: 1.1rem; font-weight: 700; color: #333; margin-bottom: 6px; line-height: 1.4; }
-        .location-btn { display: inline-flex; align-items: center; background: #fcfcfc; border: 1px solid #eee; color: #888; font-size: 0.8rem; padding: 6px 12px; border-radius: 8px; text-decoration: none; margin-top: 5px; font-weight: 500; }
+        .location-btn { display: inline-flex; align-items: center; background: #fcfcfc; border: 1px solid #eee; color: #888; font-size: 0.8rem; padding: 6px 12px; border-radius: 8px; text-decoration: none; margin-top: 5px; transition: all 0.2s; font-weight: 500; }
+        .location-btn:active { background: #f0f0f0; }
         .location-btn svg { width: 14px; height: 14px; margin-right: 4px; color: #aaa; }
         .note-box { margin-top: 10px; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; line-height: 1.4; }
         
@@ -163,7 +168,7 @@
 
         /* --- 記帳本樣式 --- */
         .ledger-tools { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn-main { flex: 1; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 5px; box-shadow: 0 4px 10px rgba(139, 125, 107, 0.3); }
+        .btn-main { flex: 1; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 5px; box-shadow: 0 4px 10px rgba(139, 125, 107, 0.3); transition: transform 0.1s; }
         .btn-stat { background: #5c8ab8; }
         .btn-main:active { transform: scale(0.98); }
 
@@ -217,7 +222,6 @@
     <symbol id="art-transport" viewBox="0 0 24 24"><path fill="currentColor" d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></symbol>
     <symbol id="art-bed" viewBox="0 0 24 24"><path fill="currentColor" d="M19,7 L11,7 L11,13 L19,13 L19,7 Z M21,3 L3,3 L3,21 L5,21 L5,18 L19,18 L19,21 L21,21 L21,3 Z M17,20 L7,20 L7,16 L17,16 L17,20 Z"/></symbol>
     <symbol id="icon-map" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></symbol>
-    
     <symbol id="icon-plus" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></symbol>
     <symbol id="icon-chart" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></symbol>
     <symbol id="icon-edit" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></symbol>
@@ -310,8 +314,8 @@
 
 <script>
     // ================= 配置區 =================
-    // 請將下方的 URL 換成您在 Apps Script 部署後取得的網址
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbyi04M25InjCYhztx0i_L-hGLr61XWyUtxmBoYi6t6LBZY5uJl4DVyAMsIFS-QzzdFMBg/exec"; 
+    // 請確認這串網址是您「新增部署」後取得的最新網址 (結尾是 /exec)
+    const GAS_URL = "https://script.google.com/macros/s/AKfycby0xn9qvpKz9AYiPv8ICkahGKyiKb7rWVnsU6GvedFGBKWioUoiadkBiSC1LXXXnDnUaA/exec"; // 請替換成您的真實網址
     // =========================================
 
     let ledgerData = [];
@@ -321,10 +325,10 @@
         initLedger();
     });
 
-    // --- 行程表功能 (保留原樣) ---
+    // --- 行程表功能 ---
     function initSchedule() {
         const rawData = [
-             // 1/15
+            // 1/15
             {date: "2026/1/15", time: "12:35", activity: "抵達成田 (16:35到)", location: "桃園國際機場第二航廈", type: "交通", note: "", customUrl: "https://maps.app.goo.gl/nx8Q56p4prUV6zNc9"},
             {date: "2026/1/15", time: "Check-in", activity: "住宿A (1/15-1/18)", location: "レム六本木", type: "住宿", note: "三晚¥47727 (Agoda)"},
             {date: "2026/1/15", time: "待取消", activity: "住宿B (記得取消!)", location: "東横INN神田秋葉原", type: "住宿", note: "⚠️ 記得要取消! 三晚¥34865"},
@@ -372,10 +376,10 @@
             tabsEl.appendChild(btn);
         });
 
-        // 2. 生成記帳本 Tab (最右邊)
+        // 2. 生成記帳本 Tab (最右邊) [修正文字：Book -> 記帳]
         const ledgerBtn = document.createElement('button');
         ledgerBtn.className = 'tab-btn';
-        ledgerBtn.innerHTML = `<span class="tab-day">Book</span><span class="tab-date">¥</span>`;
+        ledgerBtn.innerHTML = `<span class="tab-day">記帳</span><span class="tab-date">¥</span>`;
         ledgerBtn.onclick = () => switchTab('ledger', null, ledgerBtn);
         tabsEl.appendChild(ledgerBtn);
 
@@ -467,7 +471,6 @@
 
     // --- 記帳本功能 ---
     
-    // 1. 讀取資料
     function fetchLedgerData() {
         const listEl = document.getElementById('ledger-list');
         listEl.innerHTML = '<div class="loading">正在連線至 Google Sheet...</div>';
@@ -476,7 +479,7 @@
             .then(res => res.json())
             .then(res => {
                 if (res.status === 'success') {
-                    ledgerData = res.data; // 存起來供統計用
+                    ledgerData = res.data; 
                     renderLedgerList(ledgerData);
                 } else {
                     listEl.innerHTML = '<div class="loading" style="color:red">讀取失敗</div>';
@@ -484,7 +487,7 @@
             })
             .catch(err => {
                 console.error(err);
-                listEl.innerHTML = '<div class="loading" style="color:red">連線錯誤</div>';
+                listEl.innerHTML = '<div class="loading" style="color:red">連線錯誤 (請檢查 CORS / 權限)</div>';
             });
     }
 
@@ -516,7 +519,6 @@
         });
     }
 
-    // 2. 開啟/關閉 Modal
     window.openModal = function(mode, rowIndex = null) {
         document.getElementById('form-modal').classList.add('active');
         const today = new Date().toISOString().split('T')[0];
@@ -527,21 +529,17 @@
             document.getElementById('btn-submit').onclick = submitForm;
             document.getElementById('edit-row-index').value = '';
             
-            // 預設今天
             document.getElementById('inp-date').value = today;
             document.getElementById('inp-item').value = '';
             document.getElementById('inp-who').value = 'Gino';
             document.getElementById('inp-cost').value = '';
-        } else {
-            // 編輯模式資料回填由 editItem 處理
-        }
+        } 
     }
 
     window.closeModal = function() {
         document.getElementById('form-modal').classList.remove('active');
     }
 
-    // 3. 送出表單 (新增/編輯)
     window.submitForm = function() {
         const date = document.getElementById('inp-date').value;
         const item = document.getElementById('inp-item').value;
@@ -577,7 +575,7 @@
         .then(res => {
             if (res.status === 'success') {
                 closeModal();
-                fetchLedgerData(); // 重新讀取
+                fetchLedgerData(); 
             } else {
                 alert('錯誤: ' + res.message);
             }
@@ -589,7 +587,6 @@
         });
     }
 
-    // 4. 刪除
     window.deleteItem = function(rowIndex) {
         if (!confirm('確定要刪除這筆消費嗎？')) return;
 
@@ -607,7 +604,6 @@
         });
     }
 
-    // 5. 編輯
     window.editItem = function(rowIndex, date, item, who, cost) {
         openModal('edit');
         document.getElementById('modal-title').innerText = '編輯消費';
@@ -620,7 +616,6 @@
         document.getElementById('inp-cost').value = cost;
     }
 
-    // 6. 統計功能
     window.showStats = function() {
         let ginoTotal = 0;
         let dannyTotal = 0;
@@ -636,9 +631,7 @@
         document.getElementById('stats-modal').classList.add('active');
     }
 
-    function initLedger() {
-        // 初始化時不讀取，等切換到 Tab 再讀取以節省流量
-    }
+    function initLedger() { }
 </script>
 </body>
 </html>
